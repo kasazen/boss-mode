@@ -23,7 +23,11 @@ export async function processQuickCapture(
   });
 
   const textContent = response.content[0];
-  const responseText = textContent.type === 'text' ? textContent.text : '{}';
+  let responseText = textContent.type === 'text' ? textContent.text : '{}';
+
+  // Strip markdown code blocks if present
+  responseText = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+
   const update = JSON.parse(responseText);
 
   const project = state.projects.find((p) =>

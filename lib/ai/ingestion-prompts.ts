@@ -11,7 +11,7 @@ Extract ALL projects mentioned in the document and return ONLY valid JSON (no ma
       "stakeholderUrgency": 0-10,
       "stakeholderSentiment": "calm"|"concerned"|"frustrated"|"furious",
       "status": "active"|"blocked"|"completed"|"archived",
-      "deadline": "ISO 8601 date or null",
+      "deadline": null,
       "notes": "Detailed context",
       "keyRisks": ["risk1"],
       "dependencies": []
@@ -23,7 +23,8 @@ CRITICAL RULES:
 1. If stakeholder is "furious", urgency MUST be >= 8
 2. Prioritize based on CEO strategic goals (growth, risk mitigation, innovation)
 3. Extract exact quotes for risks
-4. Return ONLY the JSON object, no other text`;
+4. Set deadline to null (date parsing will be handled separately)
+5. Return ONLY the JSON object, no other text or markdown`;
 
 export function buildIngestionPrompt(content: string, fileName: string): string {
   return `Extract all project information from this document.

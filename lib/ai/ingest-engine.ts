@@ -141,7 +141,10 @@ async function extractProjects(content: string, fileName: string): Promise<Parti
   });
 
   const textContent = response.content[0];
-  const responseText = textContent.type === 'text' ? textContent.text : '{"projects":[]}';
+  let responseText = textContent.type === 'text' ? textContent.text : '{"projects":[]}';
+
+  // Strip markdown code blocks if present
+  responseText = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
 
   const extracted = JSON.parse(responseText);
 
@@ -149,6 +152,7 @@ async function extractProjects(content: string, fileName: string): Promise<Parti
     ...p,
     sourceFile: fileName,
     lastUpdated: new Date().toISOString(),
+    deadline: p.deadline || undefined, // Convert null to undefined
     stakeholderUrgency:
       p.stakeholderSentiment === 'furious' && p.stakeholderUrgency < 8
         ? 8

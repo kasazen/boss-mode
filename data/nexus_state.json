@@ -1,9 +1,91 @@
 {
   "version": "1.0",
-  "projects": [],
+  "projects": [
+    {
+      "id": "ba98b95a-3548-4209-8f46-43b68dbe65dd",
+      "name": "Project Phoenix",
+      "description": "Critical client delivery project for Acme Corp, our largest revenue generator, currently facing legal escalation due to 3-week delay.",
+      "ceoPriority": 9,
+      "stakeholderUrgency": 10,
+      "stakeholderSentiment": "furious",
+      "status": "blocked",
+      "notes": "Our largest client (Acme Corp) is furious about the 3-week delay in delivery. They've sent legal notice threatening contract cancellation if we don't ship by Friday, February 16th. Engineering team working 24/7 to resolve blocker. Consider escalating to executive team for resource allocation.",
+      "keyRisks": [
+        "Contract cancellation (worth $2.5M annually)",
+        "Legal liability for breach of contract",
+        "Reputation damage in the enterprise market",
+        "Loss of reference customer"
+      ],
+      "dependencies": [
+        "Infrastructure team must complete security audit",
+        "Legal review of modified SLA terms"
+      ],
+      "history": [
+        {
+          "timestamp": "2026-02-13T20:51:29.316Z",
+          "change": "Project created from initial ingestion",
+          "captureMethod": "file"
+        }
+      ],
+      "sourceFile": "weekly-update.md",
+      "lastUpdated": "2026-02-13T20:51:29.316Z"
+    },
+    {
+      "id": "e60a7b12-0120-49c5-bedf-2febb874fffc",
+      "name": "Project Maintenance",
+      "description": "Scheduled server maintenance and software updates for Q1 2026, routine operational work with planned downtime.",
+      "ceoPriority": 2,
+      "stakeholderUrgency": 1,
+      "stakeholderSentiment": "calm",
+      "status": "active",
+      "notes": "Scheduled server maintenance and software updates for Q1 2026. Operations team has approval for next month. No immediate action required. Planned maintenance window available.",
+      "keyRisks": [
+        "Minor downtime (planned for off-peak hours)"
+      ],
+      "dependencies": [],
+      "history": [
+        {
+          "timestamp": "2026-02-13T20:51:29.316Z",
+          "change": "Project created from initial ingestion",
+          "captureMethod": "file"
+        }
+      ],
+      "sourceFile": "weekly-update.md",
+      "lastUpdated": "2026-02-13T20:51:29.316Z"
+    },
+    {
+      "id": "4c205705-5b9f-43d5-abc2-022f10ec1361",
+      "name": "Project Innovation Hub",
+      "description": "R&D initiative exploring AI integration for customer support automation with early prototype showing 40% reduction in ticket resolution time.",
+      "ceoPriority": 7,
+      "stakeholderUrgency": 4,
+      "stakeholderSentiment": "concerned",
+      "status": "active",
+      "notes": "Exploring AI integration for customer support automation. Early prototype showing 40% reduction in ticket resolution time. Board is interested in seeing results by Q2 for strategic planning session. No hard deadline, but competitive pressure building.",
+      "keyRisks": [
+        "Budget constraints (requires $500K investment)",
+        "Team capacity (need 2 ML engineers)",
+        "Market timing (competitors may move faster)"
+      ],
+      "dependencies": [
+        "Finance approval for Q2 budget",
+        "Hiring pipeline for ML talent"
+      ],
+      "history": [
+        {
+          "timestamp": "2026-02-13T20:51:29.316Z",
+          "change": "Project created from initial ingestion",
+          "captureMethod": "file"
+        }
+      ],
+      "sourceFile": "weekly-update.md",
+      "lastUpdated": "2026-02-13T20:51:29.316Z"
+    }
+  ],
   "conflicts": [],
   "metadata": {
-    "totalFilesProcessed": 0,
+    "lastIngestion": "2026-02-13T20:51:29.316Z",
+    "totalFilesProcessed": 1,
     "qualityScore": 100
   }
 }
