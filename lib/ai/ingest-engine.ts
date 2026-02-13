@@ -22,9 +22,18 @@ export async function ingestFiles(
         const merged = await upsertProject(existing, extracted, file.name);
         allProjects.push(merged);
       } else {
-        allProjects.push({
-          ...extracted,
+        const newProject: Project = {
           id: crypto.randomUUID(),
+          name: extracted.name || 'Unnamed Project',
+          description: extracted.description || '',
+          ceoPriority: extracted.ceoPriority ?? 5,
+          stakeholderUrgency: extracted.stakeholderUrgency ?? 5,
+          stakeholderSentiment: extracted.stakeholderSentiment || 'calm',
+          status: extracted.status || 'active',
+          deadline: extracted.deadline,
+          notes: extracted.notes || '',
+          keyRisks: extracted.keyRisks || [],
+          dependencies: extracted.dependencies || [],
           history: [
             {
               timestamp: new Date().toISOString(),
@@ -32,7 +41,10 @@ export async function ingestFiles(
               captureMethod: 'file' as const,
             },
           ],
-        });
+          sourceFile: extracted.sourceFile,
+          lastUpdated: extracted.lastUpdated || new Date().toISOString(),
+        };
+        allProjects.push(newProject);
       }
     }
   }
