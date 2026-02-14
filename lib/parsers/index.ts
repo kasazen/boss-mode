@@ -14,13 +14,18 @@ export interface FileMetadata {
 }
 
 export class LocalFileSource implements FileSource {
+  private fileListCache: FileMetadata[] | null = null;
+
   constructor(private directory: string) {}
 
   async getFiles(): Promise<FileMetadata[]> {
+    // Return cached list if available
+    if (this.fileListCache) return this.fileListCache;
+
     const fs = await import('fs');
     const files = fs.readdirSync(this.directory);
 
-    return files
+    this.fileListCache = files
       .filter((name) => name !== '.gitkeep')
       .map((name) => ({
         id: name,
@@ -28,10 +33,13 @@ export class LocalFileSource implements FileSource {
         mimeType: this.getMimeType(name),
         path: path.join(this.directory, name),
       }));
+
+    return this.fileListCache;
   }
 
   async readFile(fileId: string): Promise<string> {
-    const metadata = (await this.getFiles()).find((f) => f.id === fileId);
+    const files = await this.getFiles(); // Now cached!
+    const metadata = files.find((f) => f.id === fileId);
     if (!metadata) throw new Error('File not found');
 
     return parseFile(metadata.path, metadata.mimeType);

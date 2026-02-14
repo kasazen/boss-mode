@@ -2,6 +2,7 @@
 
 import { Project } from '@/lib/schema';
 import { useState } from 'react';
+import { ProjectDetailModal } from './project-detail-modal';
 
 interface HeatmapProps {
   projects: Project[];
@@ -38,6 +39,7 @@ export function Heatmap({ projects }: HeatmapProps) {
   const [hoveredCell, setHoveredCell] = useState<{ priority: number; urgency: number } | null>(
     null
   );
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   const grid: Project[][][] = Array.from({ length: 11 }, () =>
     Array.from({ length: 11 }, () => [])
@@ -101,6 +103,11 @@ export function Heatmap({ projects }: HeatmapProps) {
                         data-testid={`heatmap-cell-${priority}-${urgency}`}
                         className={`heatmap-cell ${criticalClasses} cursor-pointer relative group`}
                         style={{ background }}
+                        onClick={() => {
+                          if (cell.length > 0) {
+                            setSelectedProject(cell[0]);
+                          }
+                        }}
                         onMouseEnter={() => setHoveredCell({ priority, urgency })}
                         onMouseLeave={() => setHoveredCell(null)}
                       >
@@ -143,6 +150,13 @@ export function Heatmap({ projects }: HeatmapProps) {
             })}
         </div>
       </div>
+
+      {selectedProject && (
+        <ProjectDetailModal
+          project={selectedProject}
+          onClose={() => setSelectedProject(null)}
+        />
+      )}
     </div>
   );
 }

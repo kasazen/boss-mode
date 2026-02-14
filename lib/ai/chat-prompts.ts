@@ -1,6 +1,6 @@
 import { NexusState } from '@/lib/schema';
 
-export const CHAT_SYSTEM_PROMPT = `You are a strategic advisor for a CEO using the Strategic Nexus dashboard.
+export const CHAT_SYSTEM_PROMPT = `You are a strategic advisor for a CEO using the Boss Mode dashboard.
 
 You have access to all projects with priority/urgency scores, status, risks, dependencies, and change history.
 
@@ -38,7 +38,7 @@ export function buildChatPrompt(userQuestion: string, nexusState: NexusState): s
     sourceFile: p.sourceFile,
   }));
 
-  return `Current Nexus State (${nexusState.projects.length} projects):
+  return `Current Dashboard State (${nexusState.projects.length} projects):
 ${JSON.stringify(projectsSummary, null, 2)}
 
 User Question: ${userQuestion}

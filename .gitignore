@@ -46,3 +46,6 @@ next-env.d.ts
 # IDE
 .vscode
 .idea
+
+# State files (contain extracted project data from personal files)
+/data/nexus_state.json

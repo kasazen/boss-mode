@@ -1,12 +1,12 @@
-# CEO Strategic Nexus
+# Boss Mode
 
-A Bloomberg/Linear-quality strategic command center that synthesizes scattered project data into a 2D visualization with AI-powered insights.
+A Bloomberg/Linear-quality AI-powered executive dashboard that synthesizes scattered project data into a 2D visualization with strategic insights.
 
 ## Features
 
 - **2D Priority Heatmap**: Bivariate visualization of CEO Priority vs. Stakeholder Urgency
 - **AI Data Extraction**: Automatic project extraction from markdown, text, PDF, DOCX files
-- **Strategic Chat**: Natural language queries about projects, risks, and priorities
+- **AI Chat**: Natural language queries about projects, risks, and priorities
 - **Zero-Friction Capture**:
   - Voice memos (30-sec recordings)
   - Email forwarding
@@ -27,13 +27,52 @@ A Bloomberg/Linear-quality strategic command center that synthesizes scattered p
    # Add your Anthropic API key and OpenAI API key
    ```
 
-3. **Run development server**:
+3. **Set up data files**:
+   ```bash
+   cp data/nexus_state.sample.json data/nexus_state.json
+   ```
+
+4. **Run development server**:
    ```bash
    npm run dev
    ```
 
-4. **Open dashboard**:
+5. **Open dashboard**:
    Navigate to [http://localhost:3000](http://localhost:3000)
+
+## Data Privacy
+
+**Important**: Boss Mode keeps your data private by default.
+
+### What's Protected
+- **Meeting transcripts** (`/ingest/*`) - Never committed to git
+- **Audio recordings** (`/audio/*`) - Never committed to git
+- **API keys** (`.env.local`) - Never committed to git
+- **Extracted projects** (`data/nexus_state.json`) - Never committed to git
+
+### First-Time Setup
+1. Copy the sample state file:
+   ```bash
+   cp data/nexus_state.sample.json data/nexus_state.json
+   ```
+
+2. Copy the environment template:
+   ```bash
+   cp .env.example .env.local
+   ```
+
+3. Add your API keys to `.env.local`:
+   - Get Anthropic key: https://console.anthropic.com/
+   - Get OpenAI key (optional): https://platform.openai.com/
+
+4. Drop your files in `/ingest` folder and click "Ingest Files"
+
+### What's Safe to Share
+- All code files (no hardcoded secrets)
+- Configuration templates (`.env.example`, `nexus_state.sample.json`)
+- Documentation and tests
+
+**Never commit**: Real API keys, personal meeting notes, or extracted project data.
 
 ## Usage
 
@@ -52,7 +91,7 @@ A Bloomberg/Linear-quality strategic command center that synthesizes scattered p
 2. Type a single sentence (e.g., "Project X is now top priority")
 3. AI fuzzy-matches the project and updates state
 
-### Strategic Chat
+### AI Chat
 1. Ask questions like "What are my highest risk projects?"
 2. Chat uses inverted pyramid format (lead sentence, bullets, sources)
 3. References specific projects and source files

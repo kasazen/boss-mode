@@ -5,8 +5,8 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'CEO Strategic Nexus',
-  description: 'Strategic command center for executive decision-making',
+  title: 'Boss Mode',
+  description: 'AI-powered executive dashboard',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

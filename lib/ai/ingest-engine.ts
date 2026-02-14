@@ -11,29 +11,45 @@ export async function ingestFiles(
   const files = await source.getFiles();
   const allProjects: Project[] = [];
 
-  for (const file of files) {
-    const content = await source.readFile(file.id);
-    const extractedProjects = await extractProjects(content, file.name);
+  // Step 1: Process files sequentially with delay to avoid rate limits
+  // (These are large meeting transcripts ~500KB each)
+  const extractionResults: Array<{ file: any; extracted: Partial<Project>[] }> = [];
 
-    for (const extracted of extractedProjects) {
-      const existing = existingState.projects.find((p) => p.name === extracted.name);
+  for (const file of files) {
+    try {
+      const content = await source.readFile(file.id);
+      const extracted = await extractProjects(content, file.name);
+      extractionResults.push({ file, extracted });
+
+      // Delay between files to avoid rate limits (3 seconds)
+      await new Promise(resolve => setTimeout(resolve, 3000));
+    } catch (error) {
+      console.error(`Error processing file ${file.name}:`, error);
+      // Continue with next file instead of failing completely
+    }
+  }
+
+  // Step 2: Process upserts sequentially to avoid state conflicts
+  for (const { file, extracted } of extractionResults) {
+    for (const extractedProject of extracted) {
+      const existing = existingState.projects.find((p) => p.name === extractedProject.name);
 
       if (existing) {
-        const merged = await upsertProject(existing, extracted, file.name);
+        const merged = await upsertProject(existing, extractedProject, file.name);
         allProjects.push(merged);
       } else {
         const newProject: Project = {
           id: crypto.randomUUID(),
-          name: extracted.name || 'Unnamed Project',
-          description: extracted.description || '',
-          ceoPriority: extracted.ceoPriority ?? 5,
-          stakeholderUrgency: extracted.stakeholderUrgency ?? 5,
-          stakeholderSentiment: extracted.stakeholderSentiment || 'calm',
-          status: extracted.status || 'active',
-          deadline: extracted.deadline,
-          notes: extracted.notes || '',
-          keyRisks: extracted.keyRisks || [],
-          dependencies: extracted.dependencies || [],
+          name: extractedProject.name || 'Unnamed Project',
+          description: extractedProject.description || '',
+          ceoPriority: extractedProject.ceoPriority ?? 5,
+          stakeholderUrgency: extractedProject.stakeholderUrgency ?? 5,
+          stakeholderSentiment: extractedProject.stakeholderSentiment || 'calm',
+          status: extractedProject.status || 'active',
+          deadline: extractedProject.deadline,
+          notes: extractedProject.notes || '',
+          keyRisks: extractedProject.keyRisks || [],
+          dependencies: extractedProject.dependencies || [],
           history: [
             {
               timestamp: new Date().toISOString(),
@@ -41,8 +57,8 @@ export async function ingestFiles(
               captureMethod: 'file' as const,
             },
           ],
-          sourceFile: extracted.sourceFile,
-          lastUpdated: extracted.lastUpdated || new Date().toISOString(),
+          sourceFile: extractedProject.sourceFile,
+          lastUpdated: extractedProject.lastUpdated || new Date().toISOString(),
         };
         allProjects.push(newProject);
       }
@@ -143,8 +159,14 @@ async function extractProjects(content: string, fileName: string): Promise<Parti
   const textContent = response.content[0];
   let responseText = textContent.type === 'text' ? textContent.text : '{"projects":[]}';
 
-  // Strip markdown code blocks if present
-  responseText = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+  // Strip markdown code blocks if present (more robust)
+  responseText = responseText.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+
+  // Find JSON object if wrapped in other text
+  const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+  if (jsonMatch) {
+    responseText = jsonMatch[0];
+  }
 
   const extracted = JSON.parse(responseText);
 

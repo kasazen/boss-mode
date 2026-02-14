@@ -58,14 +58,14 @@ export function ChatPanel() {
             }`}
           >
             <div className="text-xs text-slate-400 mb-1">
-              {message.role === 'user' ? 'You' : 'Strategic Assistant'}
+              {message.role === 'user' ? 'You' : 'AI Assistant'}
             </div>
             <div className="text-sm">{message.content}</div>
           </div>
         ))}
         {loading && (
           <div className="bg-slate-800 p-3 rounded-lg mr-8">
-            <div className="text-xs text-slate-400 mb-1">Strategic Assistant</div>
+            <div className="text-xs text-slate-400 mb-1">AI Assistant</div>
             <div className="text-sm text-slate-400">Analyzing...</div>
           </div>
         )}

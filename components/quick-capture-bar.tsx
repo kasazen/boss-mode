@@ -64,7 +64,7 @@ export function QuickCaptureBar() {
           onSelect={handleSubmit}
           className="px-4 py-2 rounded cursor-pointer hover:bg-slate-800 transition-colors"
         >
-          {loading ? 'Capturing...' : 'Capture and Update Nexus'}
+          {loading ? 'Capturing...' : 'Quick Capture'}
         </Command.Item>
       </Command.List>
     </Command.Dialog>

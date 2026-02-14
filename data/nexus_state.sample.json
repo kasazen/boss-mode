@@ -1,0 +1,57 @@
+{
+  "version": "1.0",
+  "projects": [
+    {
+      "id": "00000000-0000-0000-0000-000000000001",
+      "name": "Sample Project Alpha",
+      "description": "Example high-priority project with approaching deadline",
+      "ceoPriority": 8,
+      "stakeholderUrgency": 9,
+      "stakeholderSentiment": "frustrated",
+      "status": "active",
+      "deadline": "2026-03-01T00:00:00.000Z",
+      "notes": "This is a sample project. Replace with your own projects by ingesting files.",
+      "keyRisks": [
+        "Example risk: Resource constraints",
+        "Example risk: Technical dependencies"
+      ],
+      "dependencies": [],
+      "history": [
+        {
+          "timestamp": "2026-02-13T00:00:00.000Z",
+          "change": "Project created from sample data",
+          "captureMethod": "file"
+        }
+      ],
+      "sourceFile": "sample-data",
+      "lastUpdated": "2026-02-13T00:00:00.000Z"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000002",
+      "name": "Sample Project Beta",
+      "description": "Example low-priority maintenance task",
+      "ceoPriority": 3,
+      "stakeholderUrgency": 2,
+      "stakeholderSentiment": "calm",
+      "status": "active",
+      "notes": "This is sample data. Upload your own files to populate real projects.",
+      "keyRisks": [],
+      "dependencies": [],
+      "history": [
+        {
+          "timestamp": "2026-02-13T00:00:00.000Z",
+          "change": "Project created from sample data",
+          "captureMethod": "file"
+        }
+      ],
+      "sourceFile": "sample-data",
+      "lastUpdated": "2026-02-13T00:00:00.000Z"
+    }
+  ],
+  "conflicts": [],
+  "metadata": {
+    "lastIngestion": "2026-02-13T00:00:00.000Z",
+    "totalFilesProcessed": 0,
+    "qualityScore": 100
+  }
+}
