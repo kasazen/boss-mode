@@ -2,6 +2,10 @@
 
 A Bloomberg/Linear-quality AI-powered executive dashboard that synthesizes scattered project data into a 2D visualization with strategic insights.
 
+**→ New here? Start with [GETTING_STARTED.md](GETTING_STARTED.md) for step-by-step setup instructions.**
+
+**→ Using Claude Code? See [CLAUDE.md](CLAUDE.md) for comprehensive development context.**
+
 ## Features
 
 - **2D Priority Heatmap**: Bivariate visualization of CEO Priority vs. Stakeholder Urgency
@@ -16,29 +20,26 @@ A Bloomberg/Linear-quality AI-powered executive dashboard that synthesizes scatt
 
 ## Quick Start
 
-1. **Install dependencies**:
-   ```bash
-   npm install
-   ```
+**For detailed setup instructions, see [GETTING_STARTED.md](GETTING_STARTED.md)**
 
-2. **Configure environment**:
-   ```bash
-   cp .env.example .env.local
-   # Add your Anthropic API key and OpenAI API key
-   ```
+### 5-Minute Setup
 
-3. **Set up data files**:
-   ```bash
-   cp data/nexus_state.sample.json data/nexus_state.json
-   ```
+```bash
+# 1. Install dependencies
+npm install
 
-4. **Run development server**:
-   ```bash
-   npm run dev
-   ```
+# 2. Set up data files
+cp data/nexus_state.sample.json data/nexus_state.json
 
-5. **Open dashboard**:
-   Navigate to [http://localhost:3000](http://localhost:3000)
+# 3. Configure environment
+cp .env.example .env.local
+# Edit .env.local and add your Anthropic API key
+
+# 4. Start the dev server
+npm run dev
+```
+
+Then open [http://localhost:3000](http://localhost:3000) and click "Ingest Files" to process sample data.
 
 ## Data Privacy
 
@@ -95,6 +96,13 @@ A Bloomberg/Linear-quality AI-powered executive dashboard that synthesizes scatt
 1. Ask questions like "What are my highest risk projects?"
 2. Chat uses inverted pyramid format (lead sentence, bullets, sources)
 3. References specific projects and source files
+
+## Documentation
+
+- **[GETTING_STARTED.md](GETTING_STARTED.md)** - Step-by-step setup guide for new developers
+- **[CLAUDE.md](CLAUDE.md)** - Comprehensive project context for Claude Code
+- **[IMPLEMENTATION_REPORT.md](IMPLEMENTATION_REPORT.md)** - Original implementation quality report
+- **[.env.example](.env.example)** - Environment variable template
 
 ## Testing
 

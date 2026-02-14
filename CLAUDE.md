@@ -1,236 +1,343 @@
-# Boss Mode - Quality Report
+# Boss Mode - Claude Code Instructions
 
-**Last Updated**: 2026-02-13T20:51:29Z
-**Quality Score**: 100/100
-**Status**: ✅ All Core Features Implemented
-
----
-
-## Implementation Summary
-
-Boss Mode is a Bloomberg/Linear-quality AI-powered executive dashboard that synthesizes scattered project data into a 2D visualization with strategic insights. The system is fully functional and ready for use.
-
-### ✅ Completed Features
-
-#### Core Functionality
-- **2D Priority Heatmap**: Bivariate color visualization (blue for CEO priority, red for stakeholder urgency, purple for critical projects)
-- **AI Data Extraction**: Automatic project extraction from markdown, text, PDF, DOCX files using Claude Sonnet 4.5
-- **AI Chat Assistant**: Natural language queries with inverted pyramid responses
-- **State Management**: JSON-based persistent storage with Zod schema validation
-
-#### Zero-Friction Capture Pipelines
-- **File Ingestion**: Drop files in `/ingest` folder and click "Ingest Files"
-- **Voice Memos**: 30-second audio recording with Whisper transcription (requires OpenAI API key)
-- **Email Forwarding**: Forward emails to webhook endpoint for automatic extraction
-- **CMD+K Quick Capture**: Single-sentence updates with fuzzy project matching
-
-#### Advanced Features
-- **Conflict Detection**: Auto-flags contradictory data updates within 2-hour windows
-- **Change History**: AI-generated summaries of all project modifications
-- **Quality Scoring**: Automatic data quality assessment
-- **Auto-Escalation**: "Furious" sentiment automatically sets urgency to 8+
+**Project Type**: Next.js 15 AI-powered executive dashboard
+**Primary Language**: TypeScript, React
+**AI Strategy**: Anthropic Claude Sonnet 4.5 (extraction, chat, analysis)
+**Status**: Production-ready MVP with active development
 
 ---
 
-## Test Results
+## Project Overview
 
-### Manual Testing ✅
-- **File Ingestion**: Successfully extracted 3 projects from sample markdown file
-- **Heatmap Visualization**: Bivariate color scale working correctly
-- **Chat Assistant**: Inverted pyramid format with source citations
-- **Critical Zone Detection**: Projects with priority ≥7 AND urgency ≥7 have pulse animation
+Boss Mode is a Bloomberg/Linear-quality strategic command center that transforms scattered project data (meeting notes, emails, documents) into an interactive 2D priority heatmap with AI-powered insights.
 
-### Sample Ingestion Output
-```json
-{
-  "success": true,
-  "count": 3,
-  "projects": [
-    {
-      "name": "Project Phoenix",
-      "ceoPriority": 9,
-      "stakeholderUrgency": 10,
-      "stakeholderSentiment": "furious",
-      "status": "blocked"
-    },
-    {
-      "name": "Project Maintenance",
-      "ceoPriority": 2,
-      "stakeholderUrgency": 1,
-      "stakeholderSentiment": "calm"
-    },
-    {
-      "name": "Project Innovation Hub",
-      "ceoPriority": 7,
-      "stakeholderUrgency": 4,
-      "stakeholderSentiment": "concerned"
-    }
-  ]
+**Core Value Proposition**: Executives drop files → AI extracts projects → Visual dashboard reveals what needs attention NOW.
+
+---
+
+## Helping New Developers
+
+When a developer clones this repo for the first time, guide them through:
+
+### 1. Initial Setup Checklist
+
+```bash
+# Install dependencies
+npm install
+
+# Set up data files (IMPORTANT - prevents errors)
+cp data/nexus_state.sample.json data/nexus_state.json
+
+# Set up environment variables
+cp .env.example .env.local
+```
+
+Then help them:
+- Get an Anthropic API key from https://console.anthropic.com/
+- Add `ANTHROPIC_API_KEY=sk-ant-...` to `.env.local`
+- Optionally add `OPENAI_API_KEY=sk-proj-...` for voice memo transcription
+
+### 2. Verify Setup
+
+```bash
+# Start dev server
+npm run dev
+
+# Open http://localhost:3000
+# Should see empty heatmap with instructions banner
+```
+
+### 3. Test Data Ingestion
+
+Help them create a test file in `/ingest/test-project.md`:
+
+```markdown
+# Weekly Update
+
+## Project Alpha
+- CEO Priority: HIGH (9/10)
+- Stakeholder Urgency: CRITICAL (10/10)
+- Status: Blocked on infrastructure team
+- Risk: $2M contract at risk if we miss Friday deadline
+- Stakeholder is furious about the delay
+```
+
+Then click "Ingest Files" button and verify extraction works.
+
+---
+
+## Architecture Guide
+
+### Directory Structure
+
+```
+/app
+  /api
+    /chat          # AI chat endpoint (inverted pyramid responses)
+    /ingest        # File ingestion and AI extraction
+    /quick-capture # CMD+K single-sentence updates
+    /voice         # Voice memo transcription (Whisper)
+    /upload        # File upload handler
+  page.tsx         # Main dashboard (heatmap + chat + controls)
+  layout.tsx       # Root layout with fonts
+
+/components
+  heatmap.tsx                  # 2D bivariate visualization (priority × urgency)
+  chat-panel.tsx               # AI chat interface with inverted pyramid
+  quick-capture-bar.tsx        # CMD+K fuzzy project matching
+  project-table.tsx            # Sortable table view (8 metrics)
+  project-detail-modal.tsx     # Click project → see full details
+  view-toggle.tsx              # Switch: Heatmap ↔ Table
+  visualization-section.tsx    # Container for views
+  file-upload.tsx              # Drag-and-drop file ingestion
+  instructions-banner.tsx      # Empty state guidance
+  voice-recorder.tsx           # 30-sec audio recording
+
+/lib
+  /ai
+    client.ts          # Anthropic SDK setup
+    ingest-engine.ts   # AI extraction from files (CRITICAL)
+    chat-engine.ts     # AI chat with project context
+    chat-prompts.ts    # Inverted pyramid prompt engineering
+  /parsers
+    index.ts           # File parsers (MD, TXT, PDF, DOCX)
+    audio-parser.ts    # Whisper transcription
+  /state
+    nexus.ts           # Zod schemas and state management
+    persistence.ts     # JSON file read/write
+
+/data
+  nexus_state.json          # PRIVATE - user's real projects (gitignored)
+  nexus_state.sample.json   # Public - sample data template
+
+/ingest                     # PRIVATE - user's files (gitignored)
+  .gitkeep                  # Placeholder
+
+/tests
+  *.spec.ts                 # Playwright E2E tests (not yet run)
+```
+
+---
+
+## Key Implementation Details
+
+### 1. AI Extraction Pipeline (CRITICAL)
+
+**File**: `lib/ai/ingest-engine.ts`
+
+**How it works**:
+1. Read files from `/ingest` folder (supports MD, TXT, PDF, DOCX)
+2. Send to Claude with structured extraction prompt
+3. Parse JSON response (handles markdown code block wrapping)
+4. **Upsert logic**: Merge with existing projects by name (preserve history)
+5. Auto-escalation: "furious" sentiment → urgency = 8+
+6. Conflict detection: Flag contradictory updates within 2-hour window
+
+**Important**: Sequential processing (not parallel) to avoid rate limits.
+
+### 2. Bivariate Color Scale (Heatmap)
+
+**File**: `components/heatmap.tsx`
+
+**Color encoding**:
+- **Blue axis**: CEO Priority (0-10)
+- **Red axis**: Stakeholder Urgency (0-10)
+- **Purple zone**: High on both (critical projects)
+- **Pulse animation**: Priority ≥7 AND Urgency ≥7
+
+**Formula**: `rgb(urgency * 25.5, 0, priority * 25.5)`
+
+### 3. Inverted Pyramid Chat
+
+**File**: `lib/ai/chat-prompts.ts`
+
+**Response structure**:
+```
+[One-sentence lead with most critical insight]
+
+• [Supporting detail 1]
+• [Supporting detail 2]
+• [Supporting detail 3]
+
+**Sources**: [Project names with file references]
+```
+
+Always cite specific projects and source files.
+
+### 4. State Management
+
+**File**: `lib/state/nexus.ts`
+
+**Schema** (Zod):
+```typescript
+Project {
+  id: string (UUID)
+  name: string (unique identifier)
+  description: string
+  ceoPriority: number (0-10)
+  stakeholderUrgency: number (0-10)
+  stakeholderSentiment: "calm" | "concerned" | "frustrated" | "furious"
+  status: "active" | "blocked" | "completed" | "archived"
+  deadline?: Date
+  notes?: string
+  keyRisks: string[]
+  dependencies: string[]
+  history: ChangeEvent[] (append-only)
+  sourceFile: string (filename)
+  lastUpdated: Date
 }
 ```
 
-### Chat Response Example
-**Question**: "What are my highest risk projects?"
-
-**Answer**:
-> Project Phoenix is your highest risk initiative with imminent contract cancellation threat worth $2.5M annually and legal liability exposure.
->
-> • **Critical deadline**: Friday, February 16th delivery requirement with client legal notice already issued
-> • **Cascading enterprise impact**: Loss of flagship reference customer threatens reputation across entire enterprise market segment
-> • **Resource gap**: Engineering team at capacity working 24/7—executive escalation needed for immediate support
->
-> **Sources**: Project Phoenix (weekly-update.md), Project Innovation Hub (weekly-update.md)
+**Persistence**: JSON file at `data/nexus_state.json` (NEVER commit this!)
 
 ---
 
-## Data Health
+## Development Workflows
 
-- **Total Projects**: 3
-- **Last Ingestion**: 2026-02-13T20:51:29Z
-- **Files Processed**: 1
-- **Projects with Complete Data**: 100%
-- **Quality Score**: 100/100
+### Adding a New Feature
+
+1. **Read existing code** first - understand patterns before modifying
+2. **Follow existing patterns**:
+   - Server actions in `/app/api/*`
+   - Client components in `/components/*`
+   - Shared logic in `/lib/*`
+3. **TypeScript strict mode** - no `any` types
+4. **Test manually** - Playwright tests exist but aren't automated yet
+
+### Modifying AI Behavior
+
+**Extraction**: Edit `lib/ai/ingest-engine.ts` → `EXTRACTION_PROMPT`
+**Chat**: Edit `lib/ai/chat-prompts.ts` → `CHAT_SYSTEM_PROMPT`
+
+**Testing changes**:
+1. Drop a test file in `/ingest`
+2. Click "Ingest Files"
+3. Check console logs for AI responses
+4. Verify `data/nexus_state.json` updated correctly
+
+### Adding New File Types
+
+1. Add parser to `lib/parsers/index.ts`
+2. Update `extractTextFromFile()` with new extension
+3. Test with sample file
 
 ---
 
-## Known Issues
+## Common Tasks
 
-### Fixed During Implementation
-1. ✅ TypeScript error with Project creation (missing required fields)
-2. ✅ AI returning JSON wrapped in markdown code blocks
-3. ✅ Deadline field validation (null vs undefined)
-4. ✅ Missing type declarations for pdf-parse
+### "Help me set up the project"
+→ Walk through Initial Setup Checklist above, verify each step works
 
-### Current Limitations
-1. **Voice Memos**: Requires OpenAI API key for Whisper (not yet configured in .env.local)
-2. **Email Forwarding**: Requires webhook service setup (SendGrid/Postmark)
-3. **Playwright Tests**: Test suite created but not yet run (requires dev server + test execution)
+### "Ingest isn't working"
+→ Check:
+1. `ANTHROPIC_API_KEY` in `.env.local`
+2. Files actually in `/ingest` folder
+3. Console logs for AI errors
+4. `data/nexus_state.json` exists (copy from sample if missing)
 
----
+### "I want to add a new visualization"
+→ Create component in `/components`, add to `visualization-section.tsx`
 
-## Quick Start Guide
-
-### 1. Start the Development Server
+### "How do I deploy this?"
+→ Vercel:
 ```bash
-npm run dev
+# Add ANTHROPIC_API_KEY to Vercel env vars
+vercel deploy
 ```
 
-### 2. Access the Dashboard
-Navigate to [http://localhost:3000](http://localhost:3000)
-
-### 3. Ingest Sample Data
-The system comes with a pre-loaded sample file (`ingest/weekly-update.md`). Click "Ingest Files" to process it.
-
-### 4. Try the Chat
-Ask questions like:
-- "What are my highest risk projects?"
-- "Which projects need immediate attention?"
-- "Show me projects in the critical zone"
-
-### 5. Use Quick Capture (CMD+K)
-Press ⌘K and type:
-- "Project Phoenix is now unblocked"
-- "Innovation Hub needs budget approval urgency"
+### "Can I use a database instead of JSON?"
+→ Yes! Replace `lib/state/persistence.ts` with DB calls. Schema in `nexus.ts` stays same.
 
 ---
 
-## Architecture Highlights
+## Data Privacy (CRITICAL)
 
-### AI Strategy
-- **Primary**: Anthropic Claude Sonnet 4.5 (all text processing, extraction, chat, conflict detection)
-- **Secondary**: OpenAI Whisper (audio transcription only)
+**NEVER commit**:
+- `/ingest/*` (personal meeting notes, documents)
+- `/audio/*` (voice recordings)
+- `.env.local` (API keys)
+- `data/nexus_state.json` (extracted project data)
 
-### Tech Stack
-- **Framework**: Next.js 15 (App Router)
-- **UI**: Tailwind CSS, Lucide Icons
-- **Validation**: Zod schemas
-- **Testing**: Playwright (configured)
-- **File Parsing**: pdf-parse, mammoth, unified/remark
+These are all in `.gitignore`. If someone accidentally stages them, stop the commit immediately.
 
-### Design Patterns
-- **Test-Driven Development**: Test suite written first
-- **File Source Abstraction**: Enables future cloud storage integration (Google Drive, Dropbox)
-- **Conflict Detection**: Automatic flagging of contradictory updates
-- **Bivariate Visualization**: Dual-axis color encoding for priority + urgency
+**Safe to commit**:
+- All code files
+- `data/nexus_state.sample.json`
+- `.env.example`
+- Documentation
 
 ---
 
-## Next Steps (Post-MVP)
+## Performance Considerations
 
-### Immediate Enhancements
-1. Run full Playwright test suite (`npm run test`)
-2. Add OpenAI API key to `.env.local` for voice memos
-3. Configure email forwarding webhook
-4. Deploy to production (Vercel recommended)
+### File Ingestion
+- **Sequential processing** (not parallel) to avoid Claude API rate limits
+- **Cache file list** to avoid O(N²) lookups
+- **Large files**: DOCX meeting transcripts can be 500KB+ → expect 30-60 sec per file
 
-### Future Features
-1. **Cloud Storage Integration**: Google Drive, Dropbox file sources
-2. **Real-time Updates**: WebSocket push for live heatmap changes
-3. **Collaboration**: Multi-user dashboards with role-based access
-4. **Advanced Visualizations**: Timeline view, dependency graphs
-5. **Mobile App**: iOS/Android companion for voice memos on-the-go
+### Heatmap Rendering
+- Efficient with <100 projects
+- Consider virtualization if >200 projects
 
 ---
 
-## Iteration Log
+## Troubleshooting
 
-1. **[2026-02-13 20:00]** Initial setup: Next.js 15, Anthropic SDK, folder structure
-2. **[2026-02-13 20:15]** Core schema and state management
-3. **[2026-02-13 20:25]** AI client, parsers, and prompts
-4. **[2026-02-13 20:35]** API routes (ingest, chat, voice, email, quick-capture)
-5. **[2026-02-13 20:40]** Frontend components (heatmap, chat, quick-capture, voice recorder)
-6. **[2026-02-13 20:45]** TypeScript fixes and type declarations
-7. **[2026-02-13 20:50]** AI response parsing fixes (markdown stripping, deadline handling)
-8. **[2026-02-13 20:51]** ✅ **Successful ingestion test with 3 projects**
-9. **[2026-02-13 20:52]** ✅ **Chat assistant validated with inverted pyramid format**
-10. **[2026-02-13 20:55]** Pushed to GitHub: https://github.com/kasazen/boss-mode.git
+### "TypeError: Cannot read property 'projects'"
+→ `data/nexus_state.json` missing or corrupted. Copy from sample.
 
----
+### "Anthropic API error 401"
+→ Invalid API key in `.env.local`. Get new key from console.anthropic.com
 
-## Success Criteria
+### "No projects extracted"
+→ File format might not contain structured project data. Check AI prompt expectations.
 
-| Criterion | Status |
-|-----------|--------|
-| All Playwright tests pass | ⏳ Pending (test suite created) |
-| Heatmap uses bivariate color scale | ✅ Complete |
-| "Furious" stakeholder auto-escalates urgency | ✅ Complete (Project Phoenix: urgency = 10) |
-| Upsert logic merges existing projects | ✅ Complete |
-| History array tracks changes | ✅ Complete |
-| Chat uses inverted pyramid format | ✅ Complete |
-| Chat references specific projects | ✅ Complete |
-| Voice memo pipeline | ✅ Implemented (needs API key) |
-| Email parsing | ✅ Implemented (needs webhook) |
-| CMD+K quick capture | ✅ Complete |
-| Conflict detection | ✅ Implemented |
-| Visual aesthetic (Bloomberg/Linear) | ✅ Complete |
-| Quality score > 90 | ✅ 100/100 |
-| Manual smoke test | ✅ Complete |
+### "Heatmap is empty"
+→ No projects in state. Run ingestion first.
 
 ---
 
-## Repository
+## Testing
 
-**GitHub**: https://github.com/kasazen/boss-mode.git
-**Branch**: main
-**Commits**: 3
+**Playwright tests exist** at `/tests/*.spec.ts` but haven't been run yet.
 
-1. Initial commit: Foundation setup
-2. TypeScript fixes and sample data
-3. AI response parsing and deadline handling
-
----
-
-## Environment Configuration
-
-### Required
-- `ANTHROPIC_API_KEY`: ✅ Configured (Claude Sonnet 4.5)
-
-### Optional (Future)
-- `OPENAI_API_KEY`: ⏳ Required for voice memos
-- `NEXUS_EMAIL`: ⏳ Required for email forwarding
-- `EMAIL_WEBHOOK_SECRET`: ⏳ Required for email security
+To run:
+```bash
+npm run test      # Headless
+npm run test:ui   # Interactive
+```
 
 ---
 
-**Status**: 🚀 Production Ready (Core Features)
-**Recommended Next Step**: Run `npm run test` to execute Playwright test suite
+## Future Enhancements (Ideas)
+
+- **Cloud storage**: Integrate Google Drive, Dropbox as file sources
+- **Real-time updates**: WebSocket push when files change
+- **Multi-user**: User accounts, role-based access
+- **Mobile app**: iOS/Android for voice memos on-the-go
+- **Timeline view**: Gantt chart of project deadlines
+- **Dependency graph**: Visualize project interdependencies
+
+---
+
+## Code Quality Standards
+
+- **No hardcoded secrets**: Always use `process.env.*`
+- **TypeScript strict**: Enable all strict checks
+- **Error handling**: Always try/catch API calls
+- **Accessibility**: Use semantic HTML, ARIA labels
+- **Performance**: Lazy load heavy components
+
+---
+
+## Getting Help
+
+- **Implementation details**: See `IMPLEMENTATION_REPORT.md`
+- **Setup guide**: See `GETTING_STARTED.md`
+- **API docs**: Anthropic - https://docs.anthropic.com
+- **Questions**: Open GitHub issue
+
+---
+
+**Last Updated**: 2026-02-14
+**Maintained By**: Original author + Claude Code contributors
